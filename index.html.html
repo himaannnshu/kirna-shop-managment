@@ -1,0 +1,2323 @@
+<!-- ... existing code ... -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kirana Mitra v3.0 (Snacks, Biscuits & Tea Edition) - Production Ready</title>
+    <!-- Tailwind CSS with Fallback -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        emerald: { 50: '#ecfdf5', 100: '#d1fae5', 600: '#059669', 700: '#047857', 800: '#065f46', 900: '#064e3b', 950: '#022c22' },
+                        amber: { 50: '#fffbeb', 100: '#fef3c7', 300: '#fde047', 400: '#facc15', 500: '#eab308', 600: '#ca8a04', 700: '#a16207', 950: '#451a03' }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for 3 Chart Views -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            padding-bottom: 84px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        @media (min-width: 768px) {
+            body {
+                padding-bottom: 0;
+            }
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            body {
+                background-color: #ffffff;
+                padding-bottom: 0;
+            }
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Top Toast Notification -->
+    <div id="toast-container" class="fixed top-4 right-4 left-4 sm:left-auto z-50 flex flex-col gap-2 max-w-sm w-auto sm:w-full pointer-events-none"></div>
+
+    <!-- Header Navigation -->
+    <header class="bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-800 text-white shadow-lg sticky top-0 z-30 no-print">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between py-2.5 sm:py-3 gap-2.5">
+                <!-- Brand Logo & Title -->
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-amber-400 text-emerald-950 flex items-center justify-center font-extrabold text-lg sm:text-xl shadow-md shrink-0">
+                            <i class="fa-solid fa-mug-hot"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <h1 class="text-base sm:text-xl font-extrabold tracking-tight truncate">Kirana Mitra <span class="text-amber-300 font-black">v3.0</span></h1>
+                                <button onclick="openVersionModal()" class="bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 border border-amber-400/30 text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full transition flex items-center gap-1 cursor-pointer shrink-0">
+                                    <i class="fa-solid fa-shield-halved text-[10px]"></i> Save Fix & Backup
+                                </button>
+                            </div>
+                            <p class="text-[11px] text-emerald-100 truncate">Snacks & Biscuits + Tea Edition • Auto-Saves to Phone DB</p>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Top Quick Controls -->
+                    <div class="flex items-center gap-1.5 md:hidden shrink-0">
+                        <button onclick="openVersionModal()" class="bg-emerald-950/70 text-emerald-200 border border-emerald-400/30 font-bold px-2.5 py-1.5 rounded-xl text-[11px] flex items-center gap-1">
+                            <i class="fa-solid fa-floppy-disk text-amber-300"></i>
+                            <span>Backup</span>
+                        </button>
+                        <button onclick="openResetCenterModal()" class="bg-rose-500/30 hover:bg-rose-500/40 text-rose-100 border border-rose-300/40 font-bold px-2.5 py-1.5 rounded-xl text-[11px] flex items-center gap-1">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Tabs (Hidden on mobile because mobile uses Bottom App Bar) -->
+                <nav class="hidden md:flex items-center gap-1 overflow-x-auto">
+                    <button onclick="switchTab('quickpos')" id="tab-btn-quickpos" class="tab-btn active px-3.5 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap bg-white text-emerald-900 shadow-sm">
+                        <i class="fa-solid fa-bolt text-amber-500"></i>
+                        <span>1-Tap Counter</span>
+                    </button>
+                    <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap text-emerald-100 hover:bg-white/10">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>3 Charts</span>
+                    </button>
+                    <button onclick="switchTab('inventory')" id="tab-btn-inventory" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap text-emerald-100 hover:bg-white/10">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                        <span>Add Goods & Price</span>
+                    </button>
+                    <button onclick="switchTab('transactions')" id="tab-btn-transactions" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap text-emerald-100 hover:bg-white/10">
+                        <i class="fa-solid fa-right-left"></i>
+                        <span>Buy & Sell Log</span>
+                    </button>
+                    <button onclick="switchTab('report')" id="tab-btn-report" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap text-emerald-100 hover:bg-white/10">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                        <span>Progress Report</span>
+                    </button>
+                </nav>
+
+                <!-- Quick Action Buttons & Permanent Storage Badge (Desktop) -->
+                <div class="hidden md:flex items-center gap-2">
+                    <button onclick="openVersionModal()" title="Permanent Phone Storage & Backup Settings" class="bg-emerald-950/60 hover:bg-emerald-950/90 text-emerald-100 border border-emerald-400/30 px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-2 shadow-inner">
+                        <span id="storage-health-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <div class="text-left leading-tight">
+                            <div id="storage-badge-title" class="font-extrabold text-[11px] text-white flex items-center gap-1">
+                                <i class="fa-solid fa-hard-drive text-amber-300"></i> Phone DB Active
+                            </div>
+                            <div id="last-saved-time" class="text-[9px] text-emerald-300">Auto-saved</div>
+                        </div>
+                    </button>
+                    <button onclick="openQuickModal('SALE')" class="bg-amber-400 hover:bg-amber-300 text-emerald-950 font-bold px-3 py-2 rounded-lg text-xs shadow-md transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-cart-shopping"></i> + Sale
+                    </button>
+                    <button onclick="openQuickModal('PURCHASE')" class="bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-400/40 font-semibold px-3 py-2 rounded-lg text-xs shadow-sm transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-truck-ramp-box"></i> + Stock
+                    </button>
+                    <button onclick="openResetCenterModal()" class="bg-rose-600/90 hover:bg-rose-600 text-white border border-rose-400/40 font-bold px-3 py-2 rounded-lg text-xs shadow-sm transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-left"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE BOTTOM NAVIGATION BAR (Thumb-Friendly App Bar for Every Smartphone) -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-4px_16px_rgba(0,0,0,0.08)] z-40 grid grid-cols-5 px-1 py-1.5 no-print">
+        <button onclick="switchTab('quickpos')" id="mob-tab-quickpos" class="mob-tab-btn flex flex-col items-center justify-center py-1 rounded-xl text-emerald-700 bg-emerald-50 font-extrabold transition">
+            <i class="fa-solid fa-bolt text-base"></i>
+            <span class="text-[10px] mt-0.5">1-Tap Sell</span>
+        </button>
+        <button onclick="switchTab('inventory')" id="mob-tab-inventory" class="mob-tab-btn flex flex-col items-center justify-center py-1 rounded-xl text-slate-500 font-semibold transition">
+            <i class="fa-solid fa-boxes-stacked text-base"></i>
+            <span class="text-[10px] mt-0.5">Goods/Rate</span>
+        </button>
+        <button onclick="switchTab('dashboard')" id="mob-tab-dashboard" class="mob-tab-btn flex flex-col items-center justify-center py-1 rounded-xl text-slate-500 font-semibold transition">
+            <i class="fa-solid fa-chart-Simple text-base"></i>
+            <span class="text-[10px] mt-0.5">3 Charts</span>
+        </button>
+        <button onclick="switchTab('transactions')" id="mob-tab-transactions" class="mob-tab-btn flex flex-col items-center justify-center py-1 rounded-xl text-slate-500 font-semibold transition">
+            <i class="fa-solid fa-book text-base"></i>
+            <span class="text-[10px] mt-0.5">Khata Log</span>
+        </button>
+        <button onclick="switchTab('report')" id="mob-tab-report" class="mob-tab-btn flex flex-col items-center justify-center py-1 rounded-xl text-slate-500 font-semibold transition">
+            <i class="fa-solid fa-award text-base"></i>
+            <span class="text-[10px] mt-0.5">Report</span>
+        </button>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
+
+        <!-- MOBILE STORAGE & BACKUP QUICK BANNER (Helps shopkeepers keep data forever) -->
+        <div class="bg-gradient-to-r from-amber-50 via-emerald-50 to-teal-50 border border-emerald-200/80 rounded-2xl p-3 sm:px-4 flex flex-wrap items-center justify-between gap-2 no-print shadow-2xs">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <span class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm shrink-0 shadow-xs">
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                </span>
+                <div class="text-xs leading-snug">
+                    <span class="font-extrabold text-slate-800">Dual Phone Storage Active (IndexedDB + Local):</span>
+                    <span id="banner-save-status" class="text-emerald-800 font-semibold ml-1">All edits auto-saved on device.</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-1.5 w-full sm:w-auto justify-end">
+                <button onclick="downloadJsonBackup()" class="flex-1 sm:flex-initial justify-center bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-300 font-extrabold px-3 py-1.5 rounded-xl text-[11px] shadow-2xs transition flex items-center gap-1">
+                    <i class="fa-solid fa-download"></i> Save Backup to Phone
+                </button>
+                <button onclick="triggerRestoreFile()" class="flex-1 sm:flex-initial justify-center bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-3 py-1.5 rounded-xl text-[11px] shadow-2xs transition flex items-center gap-1">
+                    <i class="fa-solid fa-upload"></i> Load Backup
+                </button>
+                <input type="file" id="restore-file-input" accept=".json" onchange="handleRestoreFile(event)" class="hidden">
+            </div>
+        </div>
+
+        <!-- TOP SUMMARY KPI STRIP (Always Visible for Instant Shop Pulse) -->
+<!-- ... existing code ... -->
+        <!-- =================================================================== -->
+        <!-- TAB 0: 1-TAP VISUAL COUNTER (DEFAULT HOME FOR SUPER EASY USE)       -->
+        <!-- =================================================================== -->
+        <div id="tab-quickpos" class="tab-content space-y-4">
+            <!-- Mode Switcher Banner -->
+            <div class="bg-white rounded-2xl p-3.5 sm:p-4 shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl font-black shadow-inner shrink-0">
+                        <i class="fa-solid fa-hand-pointer"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base sm:text-lg font-extrabold text-slate-800">1-Tap Snacks, Biscuits & Tea Counter</h2>
+                        <p class="text-xs text-slate-500">Tap <span class="font-bold text-emerald-700">Sell +1</span>, <span class="font-bold text-emerald-700">+2</span>, or <span class="font-bold text-emerald-700">+5</span> on any item to record immediately!</p>
+                    </div>
+                </div>
+
+                <!-- Switch between 1-Tap Customer Sale vs 1-Tap Stock Purchase -->
+                <div class="grid grid-cols-2 sm:inline-flex rounded-xl bg-slate-100 p-1 border border-slate-200 w-full sm:w-auto">
+                    <button onclick="setPosMode('SALE')" id="pos-mode-sale" class="justify-center px-3 sm:px-4 py-2 rounded-lg text-xs font-extrabold bg-emerald-600 text-white shadow-sm transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-cart-shopping"></i> Sale Mode (बिक्री)
+                    </button>
+                    <button onclick="setPosMode('PURCHASE')" id="pos-mode-purchase" class="justify-center px-3 sm:px-4 py-2 rounded-lg text-xs font-extrabold text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-truck-ramp-box"></i> Add Stock (खरीद)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Visual Category Picture Selector Cards (All, Snacks & Biscuits, Tea) -->
+            <div id="pos-category-strip" class="grid grid-cols-3 gap-2 sm:gap-3">
+                <!-- Populated with SVG Category Pictures by JS -->
+            </div>
+
+            <!-- Quick Search Bar inside 1-Tap Counter -->
+            <div class="bg-white rounded-xl p-2.5 sm:p-3 shadow-xs border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-slate-400 text-xs"></i>
+                    <input type="text" id="pos-search-input" oninput="renderQuickPosCounter()" placeholder="Search Snacks, Biscuit or Tea (e.g., Parle-G, Good Day, Maggi, Red Label)..." class="w-full pl-9 pr-4 py-2 text-xs sm:text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div class="flex items-center justify-between sm:justify-end gap-2 text-xs">
+                    <button onclick="switchTab('inventory')" class="flex-1 sm:flex-initial bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold px-3 py-2 rounded-lg text-xs transition text-center">
+                        <i class="fa-solid fa-plus mr-1"></i> New Item / Rate
+                    </button>
+                    <button onclick="openQuickModal(posMode)" class="flex-1 sm:flex-initial bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-3 py-2 rounded-lg text-xs transition text-center">
+                        <i class="fa-solid fa-sliders mr-1"></i> Custom Qty
+                    </button>
+                </div>
+            </div>
+
+            <!-- Visual Goods Grid for 1-Tap Action -->
+            <div id="pos-items-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- =================================================================== -->
+        <!-- TAB 1: ANALYTICS & 3 INTERACTIVE CHARTS (Day, Week, Month)          -->
+        <!-- =================================================================== -->
+        <div id="tab-dashboard" class="tab-content hidden space-y-6">
+            <!-- Timeframe Switcher Bar -->
+<!-- ... existing code ... -->
+                    <div>
+                        <h2 class="text-base font-extrabold text-slate-800">Category-wise Stock Investment & Margin</h2>
+                        <p class="text-xs text-slate-500">Click Snacks & Biscuits or Tea below to filter your goods list</p>
+                    </div>
+                    <button onclick="filterInventoryByCategory('ALL')" class="text-xs font-bold text-emerald-700 hover:underline">Show All Goods</button>
+                </div>
+                <div id="category-summary-cards" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- ... existing code ... -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Good / Item Name (सामान का नाम) *</label>
+                            <input type="text" id="good-name" required placeholder="e.g., Britannia Good Day 100g or Tata Tea Gold" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Goods Category *</label>
+                                <select id="good-category" onchange="updateFormCategoryPreview()" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                    <option value="Snacks & Biscuits">Snacks & Biscuits (बिस्कुट और नमकीन)</option>
+                                    <option value="Tea">Tea (चाय पत्ती और टी)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Unit Type *</label>
+                                <select id="good-unit" class="w-full px-3 py-2 text-xs sm:text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                    <option value="pack">Pack / Packet</option>
+                                    <option value="box">Box / Jar</option>
+                                    <option value="kg">Kilogram (kg)</option>
+                                    <option value="piece">Piece (pc)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-indigo-700 mb-1">Purchase Cost (खरीद रेट ₹) *</label>
+                                <input type="number" step="0.01" min="0" id="good-cost" required oninput="calculateLiveMargin()" placeholder="e.g., 24" class="w-full px-3 py-2 text-xs sm:text-sm border border-indigo-200 bg-indigo-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-emerald-700 mb-1">Set Sell Price (बिक्री रेट ₹) *</label>
+                                <input type="number" step="0.01" min="0" id="good-price" required oninput="calculateLiveMargin()" placeholder="e.g., 30" class="w-full px-3 py-2 text-xs sm:text-sm border border-emerald-200 bg-emerald-50/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            </div>
+                        </div>
+
+                        <!-- Live Profit Per Unit Preview -->
+<!-- ... existing code ... -->
+                        <div class="flex flex-wrap items-center gap-2">
+                            <input type="text" id="inv-search" oninput="renderInventoryTable()" placeholder="Search item..." class="px-3 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 flex-1 sm:flex-initial">
+                            <select id="inv-cat-filter" onchange="renderInventoryTable()" class="px-2.5 py-1.5 text-xs border border-slate-200 rounded-lg bg-slate-50 font-semibold text-slate-700">
+                                <option value="ALL">All Categories</option>
+                                <option value="Snacks & Biscuits">Snacks & Biscuits</option>
+                                <option value="Tea">Tea</option>
+                            </select>
+                            <button onclick="askResetConfirmation('ITEMS')" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold px-2.5 py-1.5 rounded-lg text-xs transition flex items-center gap-1">
+                                <i class="fa-solid fa-trash-can"></i> Reset All Goods
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto mt-3">
+<!-- ... existing code ... -->
+                            <select id="log-cat-filter" onchange="renderTransactionLog()" class="px-2.5 py-1.5 text-xs border border-slate-200 rounded-lg bg-slate-50 font-semibold text-slate-700">
+                                <option value="ALL">All Categories</option>
+                                <option value="Snacks & Biscuits">Snacks & Biscuits</option>
+                                <option value="Tea">Tea</option>
+                            </select>
+                            <button onclick="askResetConfirmation('SALES_ONLY')" class="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-bold px-2.5 py-1.5 rounded-lg text-xs transition">
+                                Reset Sales Only
+                            </button>
+<!-- ... existing code ... -->
+            <!-- Report Header -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800">Kirana Mitra v3.0</span>
+                        <span id="rep-roi-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-amber-100 text-amber-800">Return on Investment: 0%</span>
+                    </div>
+                    <h2 class="text-xl font-extrabold text-slate-800 mt-1">Snacks, Biscuits & Tea Progress Report</h2>
+                    <p id="report-generated-date" class="text-xs text-slate-500">Report Generated on: —</p>
+                </div>
+
+                <div class="flex items-center gap-2 no-print">
+<!-- ... existing code ... -->
+                <button onclick="askResetConfirmation('DEMO')" class="w-full p-3 rounded-xl border border-emerald-200 bg-emerald-50/60 hover:bg-emerald-100/70 text-left transition flex items-center justify-between">
+                    <div>
+                        <p class="font-extrabold text-emerald-900">5. Restore Sample Snacks, Biscuits & Tea Data</p>
+                        <p class="text-[11px] text-emerald-700 mt-0.5">Reloads 10 realistic Snacks, Biscuits & Tea items + 90 days of sample history.</p>
+                    </div>
+                    <i class="fa-solid fa-rotate text-emerald-700"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- "ARE YOU SURE?" CONFIRMATION POPUP MODAL -->
+<!-- ... existing code ... -->
+    <!-- =================================================================== -->
+    <!-- BUILD VERSION & PERMANENT PHONE STORAGE MANAGER MODAL               -->
+    <!-- =================================================================== -->
+    <div id="version-info-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-slate-200 max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl shadow-xs">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-extrabold text-slate-800 text-base sm:text-lg">Kirana Mitra v3.0</h3>
+                            <span class="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase">Phone DB</span>
+                        </div>
+                        <p class="text-xs text-slate-500">Permanent Mobile Storage & Backup Manager</p>
+                    </div>
+                </div>
+                <button onclick="closeVersionModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="mt-3 space-y-3 text-xs overflow-y-auto pr-1 flex-1">
+                <!-- WHY MOBILE BROWSERS LOSE DATA & HOW V3.0 SOLVES IT -->
+                <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 space-y-2">
+                    <div class="font-extrabold text-amber-950 text-xs sm:text-sm flex items-center gap-1.5">
+                        <i class="fa-solid fa-lightbulb text-amber-600"></i> Why Mobile Data Was Disappearing & How v3.0 Fixes It:
+                    </div>
+                    <p class="text-[11px] text-slate-700 leading-relaxed">
+                        <strong>1. Built-in Triple Save Engine:</strong> Every time you add an item or tap Sell, v3.0 now saves your data simultaneously into <strong>Phone IndexedDB Database</strong> + <strong>LocalStorage</strong> + <strong>Window Name Memory</strong>, and requests a <strong>Permanent Storage Lock</strong> from your mobile browser.
+                    </p>
+                    <p class="text-[11px] text-slate-700 leading-relaxed">
+                        <strong>2. IMPORTANT If Running Inside AI Preview:</strong> When you open this inside the AI chat preview window, the preview runs inside a temporary security sandbox that resets when you close the tab. <strong>To use this app permanently on your mobile browser for 100% free:</strong>
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                        <button onclick="downloadStandaloneHtmlApp()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 px-3 rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 text-xs">
+                            <i class="fa-solid fa-file-arrow-down"></i> Download Standalone App (.html)
+                        </button>
+                        <button onclick="downloadJsonBackup()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-2.5 px-3 rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 text-xs">
+                            <i class="fa-solid fa-download"></i> Save Data Backup (.json)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Current Build v3.0 -->
+                <div class="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <span class="font-extrabold text-emerald-900 text-sm">v3.0 — Snacks, Biscuits & Tea Mobile Edition</span>
+                        <span class="text-[10px] font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full">Active</span>
+                    </div>
+                    <ul class="list-disc list-inside space-y-1 text-[11px] text-slate-700">
+                        <li>Streamlined exclusively to <strong>Snacks & Biscuits</strong> and <strong>Tea</strong> categories as requested.</li>
+                        <li>Added <strong>Mobile Bottom Navigation Bar</strong> & defaults to <strong>1-Tap Counter</strong> for effortless thumb operation on any smartphone.</li>
+                        <li>Upgraded to <strong>IndexedDB + LocalStorage + Persistent Storage Lock</strong> plus 1-Tap JSON Restore & Standalone App Download.</li>
+                    </ul>
+                </div>
+
+                <!-- Build v2.4 -->
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                    <div class="flex items-center justify-between">
+                        <span class="font-extrabold text-slate-800 text-xs">v2.4 & v2.0 — Visual Category Pics & Smart Reset</span>
+                        <span class="text-[10px] font-semibold text-slate-500">Previous</span>
+                    </div>
+                    <p class="text-[11px] text-slate-600">SVG category illustrations, 1-Tap Counter, 3 Chart Views (Day/Week/Month), Progress Report, and "Are you sure?" Reset Center.</p>
+                </div>
+            </div>
+
+            <!-- Local Storage Status & Backup Restore -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-3 mt-3 border-t border-slate-100 shrink-0">
+                <div class="text-[11px] text-slate-500">
+                    <i class="fa-solid fa-database text-emerald-600 mr-1"></i>
+                    <span id="modal-local-counts" class="font-bold text-slate-700">0 Goods & 0 Logs saved on device</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="triggerRestoreFile()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold py-2 px-3 rounded-xl transition flex items-center gap-1.5 text-xs">
+                        <i class="fa-solid fa-upload"></i> Restore Backup File
+                    </button>
+                    <button onclick="closeVersionModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 px-3.5 rounded-xl text-xs transition">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // =========================================================================
+        // 1. STATE, CONSTANTS & SNACKS/BISCUITS + TEA SVG ILLUSTRATIONS
+        // =========================================================================
+        const APP_VERSION = 'v3.0';
+        const STORAGE_KEY_ITEMS = 'kirana_mitra_v30_items';
+        const STORAGE_KEY_TX = 'kirana_mitra_v30_tx';
+        const IDB_NAME = 'KiranaMitraPermanentDB';
+        const IDB_STORE = 'shop_state_store';
+
+        let items = [];
+        let transactions = [];
+        let currentTimeframe = 'day'; // 'day' | 'week' | 'month'
+        let itemChartMode = 'items';  // 'items' | 'categories'
+        let posMode = 'SALE';         // 'SALE' | 'PURCHASE'
+        let posCategory = 'ALL';
+        let pendingResetScope = null; // 'SALES_ONLY' | 'LOGS' | 'ITEMS' | 'ALL_EMPTY' | 'DEMO'
+
+        // Strictly only Snacks & Biscuits and Tea as requested
+        const CATEGORIES = [
+            'Snacks & Biscuits',
+            'Tea'
+        ];
+
+        const CATEGORY_COLORS = {
+            'Snacks & Biscuits': '#f97316',
+            'Tea': '#0284c7'
+        };
+
+        const CATEGORY_HINDI = {
+            'Snacks & Biscuits': 'बिस्कुट और नमकीन',
+            'Tea': 'चाय पत्ती और टी'
+        };
+
+        // Custom SVG Illustrations for Snacks & Biscuits and Tea
+        const CATEGORY_SVGS = {
+            'Snacks & Biscuits': `
+                <svg viewBox="0 0 64 64" class="w-full h-full">
+                    <rect width="64" height="64" rx="14" fill="#ffedd5"/>
+                    <rect x="14" y="18" width="26" height="32" rx="5" fill="#ea580c"/>
+                    <rect x="17" y="23" width="20" height="12" rx="2" fill="#fef08a"/>
+                    <circle cx="42" cy="38" r="12" fill="#d97706" stroke="#b45309" stroke-width="2"/>
+                    <circle cx="39" cy="35" r="1.5" fill="#78350f"/><circle cx="45" cy="35" r="1.5" fill="#78350f"/>
+                    <circle cx="39" cy="41" r="1.5" fill="#78350f"/><circle cx="45" cy="41" r="1.5" fill="#78350f"/>
+                </svg>`,
+            'Tea': `
+                <svg viewBox="0 0 64 64" class="w-full h-full">
+                    <rect width="64" height="64" rx="14" fill="#e0f2fe"/>
+                    <path d="M16 26H42V42C42 48 37 52 30 52H28C21 52 16 48 16 42V26Z" fill="#0284c7"/>
+                    <path d="M42 30H47C49 30 51 32 51 35C51 38 49 40 47 40H42" stroke="#0284c7" stroke-width="4" fill="none"/>
+                    <path d="M24 14C24 18 27 18 27 22" stroke="#16a34a" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M33 14C33 18 36 18 36 22" stroke="#16a34a" stroke-width="3" stroke-linecap="round"/>
+                    <rect x="21" y="32" width="16" height="10" rx="2" fill="#bae6fd"/>
+                </svg>`
+        };
+
+        function getCategorySvg(cat) {
+            return CATEGORY_SVGS[cat] || CATEGORY_SVGS['Snacks & Biscuits'];
+        }
+
+        // Chart.js instances
+        let purchaseSalesChartInstance = null;
+        let profitTrendChartInstance = null;
+        let itemCategoryChartInstance = null;
+        let categoryDoughnutInstance = null;
+
+        // Helper for formatting Indian Rupees
+        function formatINR(num, showDecimals = false) {
+            const val = Number(num) || 0;
+            return '₹' + val.toLocaleString('en-IN', {
+                minimumFractionDigits: showDecimals ? 2 : 0,
+                maximumFractionDigits: showDecimals ? 2 : 0
+            });
+        }
+
+        // Helper to get YYYY-MM-DD local string relative to today
+        function getDateStrDaysAgo(daysAgo = 0) {
+            const d = new Date();
+            d.setDate(d.getDate() - daysAgo);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // =========================================================================
+        // 2. PRE-POPULATED SNACKS, BISCUITS & TEA DATA + TRIPLE STORAGE ENGINE
+        // =========================================================================
+        function generateInitialDemoData() {
+            const defaultItems = [
+                { id: 'itm_1', name: 'Parle-G Gold Glucose Biscuits 100g', category: 'Snacks & Biscuits', unit: 'pack', costPrice: 8.5, sellPrice: 10, stock: 85, minStock: 25 },
+                { id: 'itm_2', name: 'Britannia Good Day Cashew Cookies', category: 'Snacks & Biscuits', unit: 'pack', costPrice: 24, sellPrice: 30, stock: 50, minStock: 15 },
+                { id: 'itm_3', name: 'Haldiram Alu Bhujia Sev 400g', category: 'Snacks & Biscuits', unit: 'pack', costPrice: 78, sellPrice: 95, stock: 28, minStock: 10 },
+                { id: 'itm_4', name: 'Maggi 2-Minute Masala Noodles (4 Pack)', category: 'Snacks & Biscuits', unit: 'pack', costPrice: 47, sellPrice: 56, stock: 45, minStock: 15 },
+                { id: 'itm_5', name: 'Kurkure Masala Munch Family Pack', category: 'Snacks & Biscuits', unit: 'pack', costPrice: 16, sellPrice: 20, stock: 60, minStock: 20 },
+                { id: 'itm_6', name: 'Sunfeast Dark Fantasy Choco Fills', category: 'Snacks & Biscuits', unit: 'box', costPrice: 32, sellPrice: 40, stock: 9, minStock: 10 },
+                { id: 'itm_7', name: 'Tata Tea Gold Assam Leaf 250g', category: 'Tea', unit: 'pack', costPrice: 132, sellPrice: 155, stock: 30, minStock: 10 },
+                { id: 'itm_8', name: 'Brooke Bond Red Label Tea 500g', category: 'Tea', unit: 'pack', costPrice: 235, sellPrice: 270, stock: 18, minStock: 8 },
+                { id: 'itm_9', name: 'Wagh Bakri Premium Leaf Tea 250g', category: 'Tea', unit: 'pack', costPrice: 118, sellPrice: 140, stock: 24, minStock: 10 },
+                { id: 'itm_10', name: 'Tata Tea Agni Strong Chai 1kg', category: 'Tea', unit: 'kg', costPrice: 240, sellPrice: 285, stock: 7, minStock: 10 }
+            ];
+
+            const demoTx = [];
+            let txCounter = 1000;
+
+            // Generate 90 days of realistic Snacks, Biscuits & Tea purchase & sales logs
+            for (let daysAgo = 90; daysAgo >= 0; daysAgo--) {
+                const dateStr = getDateStrDaysAgo(daysAgo);
+
+                // Wholesale restock purchases every 6 days
+                if (daysAgo % 6 === 0) {
+                    for (let p = 0; p < 2; p++) {
+                        const itm = defaultItems[(daysAgo + p * 3) % defaultItems.length];
+                        const qty = 10 + ((daysAgo + p) % 12);
+                        demoTx.push({
+                            id: 'tx_' + (txCounter++),
+                            date: dateStr,
+                            type: 'PURCHASE',
+                            itemId: itm.id,
+                            itemName: itm.name,
+                            category: itm.category,
+                            unit: itm.unit,
+                            qty: qty,
+                            unitPrice: itm.costPrice,
+                            costPrice: itm.costPrice,
+                            totalAmount: Number((qty * itm.costPrice).toFixed(2)),
+                            profit: 0,
+                            note: 'Agency Wholesale Restock'
+                        });
+                    }
+                }
+
+                // Daily customer sales (4 to 6 transactions per day)
+                const dailySalesCount = 4 + (daysAgo % 3);
+                for (let s = 0; s < dailySalesCount; s++) {
+                    const itm = defaultItems[(daysAgo * 2 + s * 3) % defaultItems.length];
+                    const qty = 1 + ((daysAgo + s) % 4);
+                    const totalAmount = Number((qty * itm.sellPrice).toFixed(2));
+                    const profit = Number((qty * (itm.sellPrice - itm.costPrice)).toFixed(2));
+                    demoTx.push({
+                        id: 'tx_' + (txCounter++),
+                        date: dateStr,
+                        type: 'SALE',
+                        itemId: itm.id,
+                        itemName: itm.name,
+                        category: itm.category,
+                        unit: itm.unit,
+                        qty: qty,
+                        unitPrice: itm.sellPrice,
+                        costPrice: itm.costPrice,
+                        totalAmount: totalAmount,
+                        profit: profit,
+                        note: 'Counter Cash / UPI Sale'
+                    });
+                }
+            }
+
+            items = defaultItems;
+            transactions = demoTx.sort((a, b) => b.date.localeCompare(a.date));
+            saveDataToStorage();
+        }
+
+        // Request Persistent Storage Lock from mobile browsers (Chrome Android / Safari iOS)
+        async function requestPermanentPhoneStorage() {
+            try {
+                if (navigator.storage && navigator.storage.persist) {
+                    const isPersisted = await navigator.storage.persist();
+                    const badgeTitle = document.getElementById('storage-badge-title');
+                    if (badgeTitle && isPersisted) {
+                        badgeTitle.innerHTML = '<i class="fa-solid fa-lock text-amber-300"></i> Phone DB Locked';
+                    }
+                }
+            } catch (e) {
+                // Ignore if restricted by iframe
+            }
+        }
+
+        // Open IndexedDB for permanent mobile device database
+        function openKiranaIndexedDB() {
+            return new Promise((resolve, reject) => {
+                if (!window.indexedDB) {
+                    return reject(new Error('IndexedDB not supported'));
+                }
+                const req = window.indexedDB.open(IDB_NAME, 1);
+                req.onupgradeneeded = function (e) {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(IDB_STORE)) {
+                        db.createObjectStore(IDB_STORE);
+                    }
+                };
+                req.onsuccess = function (e) {
+                    resolve(e.target.result);
+                };
+                req.onerror = function (e) {
+                    reject(e.target.error);
+                };
+            });
+        }
+
+        async function saveToIndexedDB(payload) {
+            try {
+                const db = await openKiranaIndexedDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(IDB_STORE, 'readwrite');
+                    const store = tx.objectStore(IDB_STORE);
+                    store.put(payload, 'kirana_v30_master_data');
+                    tx.oncomplete = () => resolve(true);
+                    tx.onerror = (e) => reject(e);
+                });
+            } catch (e) {
+                return false;
+            }
+        }
+
+        async function loadFromIndexedDB() {
+            try {
+                const db = await openKiranaIndexedDB();
+                return new Promise((resolve) => {
+                    const tx = db.transaction(IDB_STORE, 'readonly');
+                    const store = tx.objectStore(IDB_STORE);
+                    const getReq = store.get('kirana_v30_master_data');
+                    getReq.onsuccess = () => resolve(getReq.result || null);
+                    getReq.onerror = () => resolve(null);
+                });
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // Filter out any old non-Snacks/Tea categories if migrating from an older build
+        function sanitizeToAllowedCategories(rawItems, rawTx) {
+            const validItems = (rawItems || []).filter(i => CATEGORIES.includes(i.category));
+            const validTx = (rawTx || []).filter(t => CATEGORIES.includes(t.category));
+            return { validItems, validTx };
+        }
+
+        async function loadDataFromStorage() {
+            let loaded = false;
+
+            // 1. Try IndexedDB first (Most reliable on mobile browsers)
+            const idbData = await loadFromIndexedDB();
+            if (idbData && Array.isArray(idbData.items) && Array.isArray(idbData.transactions)) {
+                const { validItems, validTx } = sanitizeToAllowedCategories(idbData.items, idbData.transactions);
+                if (validItems.length > 0 || idbData.intentionallyEmpty) {
+                    items = validItems;
+                    transactions = validTx;
+                    loaded = true;
+                }
+            }
+
+            // 2. Fallback to localStorage
+            if (!loaded) {
+                try {
+                    const savedItems = localStorage.getItem(STORAGE_KEY_ITEMS);
+                    const savedTx = localStorage.getItem(STORAGE_KEY_TX);
+                    if (savedItems !== null && savedTx !== null) {
+                        const parsedItems = JSON.parse(savedItems);
+                        const parsedTx = JSON.parse(savedTx);
+                        const { validItems, validTx } = sanitizeToAllowedCategories(parsedItems, parsedTx);
+                        items = validItems;
+                        transactions = validTx;
+                        loaded = true;
+                    }
+                } catch (e) {
+                    console.warn('localStorage fallback warning:', e);
+                }
+            }
+
+            // 3. Fallback to window.name session cache if inside strict mobile webview
+            if (!loaded && window.name && window.name.startsWith('KIRANA_V30_')) {
+                try {
+                    const parsed = JSON.parse(window.name.replace('KIRANA_V30_', ''));
+                    if (Array.isArray(parsed.items)) {
+                        items = parsed.items;
+                        transactions = parsed.transactions || [];
+                        loaded = true;
+                    }
+                } catch (e) {}
+            }
+
+            if (!loaded) {
+                generateInitialDemoData();
+            } else {
+                // Ensure both stores are synced
+                saveDataToStorage();
+            }
+            updateVersionModalStats();
+        }
+
+        function saveDataToStorage() {
+            const timestamp = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const payload = {
+                items: items,
+                transactions: transactions,
+                intentionallyEmpty: items.length === 0,
+                updatedAt: Date.now()
+            };
+
+            // 1. Save to localStorage
+            try {
+                localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(items));
+                localStorage.setItem(STORAGE_KEY_TX, JSON.stringify(transactions));
+            } catch (e) {}
+
+            // 2. Save to IndexedDB (Asynchronous permanent mobile database)
+            saveToIndexedDB(payload);
+
+            // 3. Save to window.name as third fallback
+            try {
+                window.name = 'KIRANA_V30_' + JSON.stringify(payload);
+            } catch (e) {}
+
+            // Update visual save indicators
+            const timeEl = document.getElementById('last-saved-time');
+            if (timeEl) timeEl.textContent = `Saved ${timestamp}`;
+            const bannerEl = document.getElementById('banner-save-status');
+            if (bannerEl) bannerEl.textContent = `Auto-saved to Phone (${items.length} Goods, ${transactions.length} Logs) at ${timestamp}`;
+
+            updateVersionModalStats();
+        }
+
+        function updateVersionModalStats() {
+            const countsEl = document.getElementById('modal-local-counts');
+            if (countsEl) {
+                countsEl.textContent = `${items.length} Goods & ${transactions.length} Buy/Sell Logs saved on device`;
+            }
+        }
+
+        function openVersionModal() {
+            updateVersionModalStats();
+            const modal = document.getElementById('version-info-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeVersionModal() {
+            const modal = document.getElementById('version-info-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function downloadJsonBackup() {
+            const backupPayload = {
+                app: `Kirana Mitra ${APP_VERSION} Snacks & Tea Backup`,
+                version: APP_VERSION,
+                exportedAt: new Date().toISOString(),
+                items: items,
+                transactions: transactions
+            };
+            const blob = new Blob([JSON.stringify(backupPayload, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Kirana_Mitra_${APP_VERSION}_Backup_${getDateStrDaysAgo(0)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showToast(`Backup saved to your phone Downloads folder!`);
+        }
+
+        function triggerRestoreFile() {
+            const input = document.getElementById('restore-file-input');
+            if (input) input.click();
+        }
+
+        function handleRestoreFile(event) {
+            const file = event.target.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (Array.isArray(data.items) && Array.isArray(data.transactions)) {
+                        items = data.items;
+                        transactions = data.transactions;
+                        saveDataToStorage();
+                        refreshEntireApp();
+                        closeVersionModal();
+                        showToast(`Restored ${items.length} Goods & ${transactions.length} Logs from backup!`);
+                    } else {
+                        showToast('Invalid backup file format.', 'warning');
+                    }
+                } catch (err) {
+                    showToast('Could not read backup file.', 'warning');
+                }
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        function downloadStandaloneHtmlApp() {
+            const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Kirana_Mitra_v3.0_Mobile_App.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showToast('Downloaded Standalone Mobile App (.html)!');
+        }
+
+        // =========================================================================
+        // 2B. GRANULAR RESET SYSTEM WITH "ARE YOU SURE?" CONFIRMATION MODAL
+        // =========================================================================
+<!-- ... existing code ... -->
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(`tab-${tabId}`);
+            if (target) target.classList.remove('hidden');
+
+            // Update Desktop Top Tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-emerald-900', 'shadow-sm');
+                btn.classList.add('text-emerald-100', 'hover:bg-white/10');
+            });
+            const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-emerald-100', 'hover:bg-white/10');
+                activeBtn.classList.add('bg-white', 'text-emerald-900', 'shadow-sm');
+            }
+
+            // Update Mobile Bottom Navigation Bar
+            document.querySelectorAll('.mob-tab-btn').forEach(btn => {
+                btn.className = 'mob-tab-btn flex flex-col items-center justify-center py-1 rounded-xl text-slate-500 font-semibold transition';
+            });
+            const activeMobBtn = document.getElementById(`mob-tab-${tabId}`);
+            if (activeMobBtn) {
+                activeMobBtn.className = 'mob-tab-btn flex flex-col items-center justify-center py-1 rounded-xl text-emerald-700 bg-emerald-50 font-extrabold transition';
+            }
+
+            if (tabId === 'dashboard') {
+                updateAllCharts();
+            } else if (tabId === 'report') {
+                renderProgressReport();
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // =========================================================================
+        // 4. TIMEFRAME ENGINE (DAY-WISE, WEEK-WISE, MONTH-WISE BUCKETS)
+        // =========================================================================
+        function getTimeframeBuckets(mode) {
+            const buckets = [];
+            const today = new Date();
+
+            if (mode === 'day') {
+                for (let i = 13; i >= 0; i--) {
+                    const d = new Date(today);
+                    d.setDate(today.getDate() - i);
+                    const dateStr = getDateStrDaysAgo(i);
+                    const label = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+                    buckets.push({
+                        key: dateStr,
+                        label: label,
+                        start: dateStr,
+                        end: dateStr
+                    });
+                }
+            } else if (mode === 'week') {
+                for (let w = 7; w >= 0; w--) {
+                    const endDayOffset = w * 7;
+                    const startDayOffset = endDayOffset + 6;
+                    const startStr = getDateStrDaysAgo(startDayOffset);
+                    const endStr = getDateStrDaysAgo(endDayOffset);
+                    const dStart = new Date(startStr + 'T00:00:00');
+                    const dEnd = new Date(endStr + 'T00:00:00');
+                    const label = `${dStart.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} - ${dEnd.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`;
+                    buckets.push({
+                        key: `wk_${w}`,
+                        label: label,
+                        start: startStr,
+                        end: endStr
+                    });
+                }
+            } else if (mode === 'month') {
+                for (let m = 5; m >= 0; m--) {
+                    const d = new Date(today.getFullYear(), today.getMonth() - m, 1);
+                    const year = d.getFullYear();
+                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                    const startStr = `${year}-${month}-01`;
+                    const lastDay = new Date(year, d.getMonth() + 1, 0).getDate();
+                    const endStr = `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
+                    const label = d.toLocaleDateString('en-IN', { month: 'short', year: '2-digit' });
+                    buckets.push({
+                        key: `${year}-${month}`,
+                        label: label,
+                        start: startStr,
+                        end: endStr
+                    });
+                }
+            }
+            return buckets;
+        }
+
+        function setTimeframe(mode) {
+            currentTimeframe = mode;
+            ['day', 'week', 'month'].forEach(tf => {
+                const btn = document.getElementById(`tf-btn-${tf}`);
+                if (!btn) return;
+                if (tf === mode) {
+                    btn.className = 'tf-btn px-4 py-2 rounded-lg text-xs font-extrabold transition-all bg-emerald-700 text-white shadow-sm';
+                } else {
+                    btn.className = 'tf-btn px-4 py-2 rounded-lg text-xs font-extrabold transition-all text-slate-600 hover:text-slate-900';
+                }
+            });
+            updateAllCharts();
+        }
+
+        function setItemChartMode(mode) {
+            itemChartMode = mode;
+            const btnItems = document.getElementById('ic-btn-items');
+            const btnCats = document.getElementById('ic-btn-categories');
+            if (btnItems && btnCats) {
+                if (mode === 'items') {
+                    btnItems.className = 'px-3 py-1.5 rounded-md text-xs font-bold bg-white shadow-xs text-emerald-800';
+                    btnCats.className = 'px-3 py-1.5 rounded-md text-xs font-bold text-slate-600 hover:text-slate-900';
+                } else {
+                    btnCats.className = 'px-3 py-1.5 rounded-md text-xs font-bold bg-white shadow-xs text-emerald-800';
+                    btnItems.className = 'px-3 py-1.5 rounded-md text-xs font-bold text-slate-600 hover:text-slate-900';
+                }
+            }
+            renderItemCategoryChart();
+        }
+
+        // =========================================================================
+        // 5. TOP KPI SUMMARY & 3 CHART VIEWS RENDERING
+        // =========================================================================
+        function updateTopKPIs() {
+            let stockCostValue = 0;
+            let expectedSaleValue = 0;
+            let lowStockCount = 0;
+
+            items.forEach(itm => {
+                stockCostValue += itm.stock * itm.costPrice;
+                expectedSaleValue += itm.stock * itm.sellPrice;
+                if (itm.stock <= (itm.minStock || 10)) lowStockCount++;
+            });
+
+            let totalSalesRevenue = 0;
+            let totalSalesCount = 0;
+            let totalNetProfit = 0;
+
+            transactions.forEach(tx => {
+                if (tx.type === 'SALE') {
+                    totalSalesRevenue += tx.totalAmount;
+                    totalSalesCount++;
+                    totalNetProfit += tx.profit;
+                }
+            });
+
+            const avgMarginPct = totalSalesRevenue > 0 ? ((totalNetProfit / totalSalesRevenue) * 100).toFixed(1) : '0.0';
+
+            const elStockVal = document.getElementById('kpi-stock-value');
+            if (elStockVal) elStockVal.textContent = formatINR(stockCostValue);
+            const elItemsCount = document.getElementById('kpi-total-items');
+            if (elItemsCount) elItemsCount.textContent = `${items.length} Items`;
+            const elExpSale = document.getElementById('kpi-expected-sale');
+            if (elExpSale) elExpSale.textContent = formatINR(expectedSaleValue);
+            const elPotProfit = document.getElementById('kpi-potential-profit');
+            if (elPotProfit) elPotProfit.textContent = formatINR(expectedSaleValue - stockCostValue);
+            const elTotalSales = document.getElementById('kpi-total-sales');
+            if (elTotalSales) elTotalSales.textContent = formatINR(totalSalesRevenue);
+            const elSalesCount = document.getElementById('kpi-sales-count');
+            if (elSalesCount) elSalesCount.textContent = `${totalSalesCount} Sales`;
+            const elNetProfit = document.getElementById('kpi-net-profit');
+            if (elNetProfit) elNetProfit.textContent = formatINR(totalNetProfit);
+            const elMarginPct = document.getElementById('kpi-margin-pct');
+            if (elMarginPct) elMarginPct.textContent = `${avgMarginPct}% Margin`;
+            const elLowStock = document.getElementById('kpi-low-stock');
+            if (elLowStock) elLowStock.textContent = `${lowStockCount} Goods`;
+        }
+
+        function populateChartCategoryFilter() {
+            const sel = document.getElementById('chart-category-filter');
+            if (!sel) return;
+            const currentVal = sel.value || 'ALL';
+            sel.innerHTML = `<option value="ALL">All Categories (Snacks & Biscuits + Tea)</option>` +
+                CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
+            sel.value = currentVal;
+        }
+
+        function updateAllCharts() {
+            const catFilterEl = document.getElementById('chart-category-filter');
+            const selectedCat = catFilterEl ? catFilterEl.value : 'ALL';
+            const buckets = getTimeframeBuckets(currentTimeframe);
+
+            const purchaseData = [];
+            const salesData = [];
+            const profitData = [];
+            const marginData = [];
+
+            let periodPurchaseSum = 0;
+            let periodSalesSum = 0;
+            let periodProfitSum = 0;
+
+            buckets.forEach(b => {
+                let bPurch = 0;
+                let bSale = 0;
+                let bProfit = 0;
+
+                transactions.forEach(tx => {
+                    if (selectedCat !== 'ALL' && tx.category !== selectedCat) return;
+                    if (tx.date >= b.start && tx.date <= b.end) {
+                        if (tx.type === 'PURCHASE') {
+                            bPurch += tx.totalAmount;
+                        } else if (tx.type === 'SALE') {
+                            bSale += tx.totalAmount;
+                            bProfit += tx.profit;
+                        }
+                    }
+                });
+
+                purchaseData.push(Math.round(bPurch));
+                salesData.push(Math.round(bSale));
+                profitData.push(Math.round(bProfit));
+                marginData.push(bSale > 0 ? Number(((bProfit / bSale) * 100).toFixed(1)) : 0);
+
+                periodPurchaseSum += bPurch;
+                periodSalesSum += bSale;
+                periodProfitSum += bProfit;
+            });
+
+            const c1Purch = document.getElementById('c1-total-purchase');
+            if (c1Purch) c1Purch.textContent = formatINR(periodPurchaseSum);
+            const c1Sales = document.getElementById('c1-total-sales');
+            if (c1Sales) c1Sales.textContent = formatINR(periodSalesSum);
+            const c2Profit = document.getElementById('c2-total-profit');
+            if (c2Profit) c2Profit.textContent = formatINR(periodProfitSum);
+            const avgMargin = periodSalesSum > 0 ? ((periodProfitSum / periodSalesSum) * 100).toFixed(1) : '0.0';
+            const c2Margin = document.getElementById('c2-avg-margin');
+            if (c2Margin) c2Margin.textContent = `${avgMargin}%`;
+
+            const labels = buckets.map(b => b.label);
+
+            // CHART 1: Purchase vs Sales
+            const ctx1 = document.getElementById('purchaseSalesChart');
+            if (ctx1) {
+                if (purchaseSalesChartInstance) purchaseSalesChartInstance.destroy();
+                purchaseSalesChartInstance = new Chart(ctx1.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Purchase Cost (खरीद ₹)',
+                                data: purchaseData,
+                                backgroundColor: 'rgba(99, 102, 241, 0.82)',
+                                borderRadius: 6
+                            },
+                            {
+                                label: 'Customer Sales (बिक्री ₹)',
+                                data: salesData,
+                                backgroundColor: 'rgba(16, 185, 129, 0.88)',
+                                borderRadius: 6
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'top' } },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { callback: v => '₹' + v.toLocaleString('en-IN') }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // CHART 2: Net Profit & Margin %
+            const ctx2 = document.getElementById('profitTrendChart');
+            if (ctx2) {
+                if (profitTrendChartInstance) profitTrendChartInstance.destroy();
+                profitTrendChartInstance = new Chart(ctx2.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                type: 'bar',
+                                label: 'Net Profit (मुनाफा ₹)',
+                                data: profitData,
+                                backgroundColor: 'rgba(245, 158, 11, 0.85)',
+                                borderRadius: 6,
+                                yAxisID: 'y'
+                            },
+                            {
+                                type: 'line',
+                                label: 'Profit Margin (%)',
+                                data: marginData,
+                                borderColor: '#059669',
+                                backgroundColor: '#059669',
+                                borderWidth: 2.5,
+                                tension: 0.35,
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'top' } },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                position: 'left',
+                                ticks: { callback: v => '₹' + v.toLocaleString('en-IN') }
+                            },
+                            y1: {
+                                beginAtZero: true,
+                                position: 'right',
+                                grid: { drawOnChartArea: false },
+                                ticks: { callback: v => v + '%' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            renderItemCategoryChart();
+        }
+
+        function renderItemCategoryChart() {
+            const buckets = getTimeframeBuckets(currentTimeframe);
+            const startWindow = buckets[0].start;
+            const endWindow = buckets[buckets.length - 1].end;
+
+            let labels = [];
+            let salesArr = [];
+            let investArr = [];
+            let profitArr = [];
+
+            if (itemChartMode === 'items') {
+                const map = {};
+                items.forEach(itm => {
+                    map[itm.id] = {
+                        name: itm.name.length > 20 ? itm.name.slice(0, 20) + '…' : itm.name,
+                        invest: itm.stock * itm.costPrice,
+                        sales: 0,
+                        profit: 0
+                    };
+                });
+
+                transactions.forEach(tx => {
+                    if (tx.date >= startWindow && tx.date <= endWindow && map[tx.itemId]) {
+                        if (tx.type === 'SALE') {
+                            map[tx.itemId].sales += tx.totalAmount;
+                            map[tx.itemId].profit += tx.profit;
+                        }
+                    }
+                });
+
+                const sorted = Object.values(map).sort((a, b) => b.sales - a.sales).slice(0, 10);
+                labels = sorted.map(x => x.name);
+                salesArr = sorted.map(x => Math.round(x.sales));
+                investArr = sorted.map(x => Math.round(x.invest));
+                profitArr = sorted.map(x => Math.round(x.profit));
+            } else {
+                const catMap = {};
+                CATEGORIES.forEach(c => {
+                    catMap[c] = { invest: 0, sales: 0, profit: 0 };
+                });
+
+                items.forEach(itm => {
+                    if (!catMap[itm.category]) catMap[itm.category] = { invest: 0, sales: 0, profit: 0 };
+                    catMap[itm.category].invest += itm.stock * itm.costPrice;
+                });
+
+                transactions.forEach(tx => {
+                    if (tx.date >= startWindow && tx.date <= endWindow) {
+                        if (!catMap[tx.category]) catMap[tx.category] = { invest: 0, sales: 0, profit: 0 };
+                        if (tx.type === 'SALE') {
+                            catMap[tx.category].sales += tx.totalAmount;
+                            catMap[tx.category].profit += tx.profit;
+                        }
+                    }
+                });
+
+                labels = Object.keys(catMap);
+                salesArr = labels.map(c => Math.round(catMap[c].sales));
+                investArr = labels.map(c => Math.round(catMap[c].invest));
+                profitArr = labels.map(c => Math.round(catMap[c].profit));
+            }
+
+            const ctx3 = document.getElementById('itemCategoryChart');
+            if (ctx3) {
+                if (itemCategoryChartInstance) itemCategoryChartInstance.destroy();
+                itemCategoryChartInstance = new Chart(ctx3.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Sales Revenue (₹)',
+                                data: salesArr,
+                                backgroundColor: 'rgba(16, 185, 129, 0.85)',
+                                borderRadius: 5
+                            },
+                            {
+                                label: 'Current Stock Investment (₹)',
+                                data: investArr,
+                                backgroundColor: 'rgba(99, 102, 241, 0.78)',
+                                borderRadius: 5
+                            },
+                            {
+                                label: 'Net Profit Earned (₹)',
+                                data: profitArr,
+                                backgroundColor: 'rgba(245, 158, 11, 0.9)',
+                                borderRadius: 5
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'top' } },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { callback: v => '₹' + v.toLocaleString('en-IN') }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Doughnut Chart for Category Investment Share
+            const catTotals = {};
+            let grandTotalInvest = 0;
+            CATEGORIES.forEach(c => catTotals[c] = 0);
+            items.forEach(itm => {
+                const val = itm.stock * itm.costPrice;
+                catTotals[itm.category] = (catTotals[itm.category] || 0) + val;
+                grandTotalInvest += val;
+            });
+
+            const cLabels = Object.keys(catTotals);
+            const cValues = cLabels.map(c => Math.round(catTotals[c]));
+            const cColors = cLabels.map(c => CATEGORY_COLORS[c] || '#64748b');
+
+            const ctx4 = document.getElementById('categoryDoughnutChart');
+            if (ctx4) {
+                if (categoryDoughnutInstance) categoryDoughnutInstance.destroy();
+                categoryDoughnutInstance = new Chart(ctx4.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: cLabels,
+                        datasets: [{
+                            data: cValues,
+                            backgroundColor: cColors,
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '62%',
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            const legendEl = document.getElementById('category-investment-legend');
+            if (legendEl) {
+                legendEl.innerHTML = cLabels.map((cat, idx) => {
+                    const val = cValues[idx];
+                    const pct = grandTotalInvest > 0 ? ((val / grandTotalInvest) * 100).toFixed(1) : '0.0';
+                    return `
+                        <div class="flex items-center justify-between text-xs py-1 border-b border-slate-100 last:border-none">
+                            <div class="flex items-center gap-2 truncate">
+                                <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${cColors[idx]}"></span>
+                                <span class="font-semibold text-slate-700 truncate">${cat}</span>
+                            </div>
+                            <div class="font-bold text-slate-800 shrink-0">${formatINR(val)} <span class="text-slate-400 font-normal">(${pct}%)</span></div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        // =========================================================================
+        // 6. 1-TAP VISUAL POS COUNTER & MANUAL INVENTORY MANAGEMENT
+        // =========================================================================
+        function setPosMode(mode) {
+            posMode = mode;
+            const saleBtn = document.getElementById('pos-mode-sale');
+            const purchBtn = document.getElementById('pos-mode-purchase');
+            if (saleBtn && purchBtn) {
+                if (mode === 'SALE') {
+                    saleBtn.className = 'justify-center px-3 sm:px-4 py-2 rounded-lg text-xs font-extrabold bg-emerald-600 text-white shadow-sm transition flex items-center gap-1.5';
+                    purchBtn.className = 'justify-center px-3 sm:px-4 py-2 rounded-lg text-xs font-extrabold text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5';
+                } else {
+                    purchBtn.className = 'justify-center px-3 sm:px-4 py-2 rounded-lg text-xs font-extrabold bg-indigo-600 text-white shadow-sm transition flex items-center gap-1.5';
+                    saleBtn.className = 'justify-center px-3 sm:px-4 py-2 rounded-lg text-xs font-extrabold text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5';
+                }
+            }
+            renderQuickPosCounter();
+        }
+
+        function selectPosCategory(cat) {
+            posCategory = cat;
+            renderQuickPosCounter();
+        }
+
+        function renderQuickPosCounter() {
+            const stripEl = document.getElementById('pos-category-strip');
+            const gridEl = document.getElementById('pos-items-grid');
+            if (!stripEl || !gridEl) return;
+
+            const allActive = posCategory === 'ALL';
+            let stripHtml = `
+                <button onclick="selectPosCategory('ALL')" class="p-2.5 rounded-2xl border text-left transition flex items-center gap-2.5 ${allActive ? 'bg-emerald-700 text-white border-emerald-700 shadow-md ring-2 ring-emerald-300' : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300'}">
+                    <div class="w-10 h-10 rounded-xl ${allActive ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-700'} flex items-center justify-center font-black text-base shrink-0">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="text-xs font-extrabold truncate">All Goods</div>
+                        <div class="text-[10px] ${allActive ? 'text-emerald-100' : 'text-slate-400'} font-semibold">${items.length} Items</div>
+                    </div>
+                </button>
+            `;
+
+            CATEGORIES.forEach(cat => {
+                const count = items.filter(i => i.category === cat).length;
+                const isActive = posCategory === cat;
+                stripHtml += `
+                    <button onclick="selectPosCategory('${cat.replace(/'/g, "\\'")}')" class="p-2.5 rounded-2xl border text-left transition flex items-center gap-2.5 ${isActive ? 'bg-emerald-700 text-white border-emerald-700 shadow-md ring-2 ring-emerald-300' : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300'}">
+                        <div class="w-10 h-10 rounded-xl overflow-hidden shrink-0 shadow-2xs bg-white p-0.5">
+                            ${getCategorySvg(cat)}
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-xs font-extrabold truncate">${cat}</div>
+                            <div class="text-[10px] ${isActive ? 'text-emerald-100' : 'text-slate-400'} truncate">${CATEGORY_HINDI[cat] || ''} • ${count}</div>
+                        </div>
+                    </button>
+                `;
+            });
+            stripEl.innerHTML = stripHtml;
+
+            const searchVal = (document.getElementById('pos-search-input')?.value || '').trim().toLowerCase();
+            const filtered = items.filter(itm => {
+                const matchCat = posCategory === 'ALL' || itm.category === posCategory;
+                const matchText = !searchVal || itm.name.toLowerCase().includes(searchVal) || itm.category.toLowerCase().includes(searchVal);
+                return matchCat && matchText;
+            });
+
+            if (filtered.length === 0) {
+                gridEl.innerHTML = `
+                    <div class="col-span-full bg-white rounded-2xl p-8 text-center border border-slate-200">
+                        <p class="text-sm font-bold text-slate-600">No Snacks, Biscuits or Tea items match your filter.</p>
+                        <button onclick="switchTab('inventory')" class="mt-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-sm transition">
+                            + Add New Item Now
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            gridEl.innerHTML = filtered.map(itm => {
+                const unitProfit = itm.sellPrice - itm.costPrice;
+                const isLow = itm.stock <= (itm.minStock || 10);
+                const actionColor = posMode === 'SALE'
+                    ? 'bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white'
+                    : 'bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white';
+                const actionLabel = posMode === 'SALE' ? 'Sell' : 'Buy';
+
+                return `
+                    <div class="bg-white rounded-2xl p-3.5 border ${isLow ? 'border-rose-300 ring-1 ring-rose-100' : 'border-slate-200'} shadow-xs hover:shadow-md transition flex flex-col justify-between gap-3">
+                        <div class="flex items-start gap-3">
+                            <div class="w-12 h-12 rounded-2xl overflow-hidden shrink-0 border border-slate-100 shadow-2xs">
+                                ${getCategorySvg(itm.category)}
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center justify-between gap-1">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 truncate">${itm.category}</span>
+                                    <span class="text-[11px] font-extrabold ${isLow ? 'text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full' : 'text-slate-600'}">
+                                        Stock: ${itm.stock} ${itm.unit}
+                                    </span>
+                                </div>
+                                <h4 class="font-extrabold text-slate-800 text-sm mt-1 leading-snug line-clamp-2">${itm.name}</h4>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-1.5 bg-slate-50 rounded-xl p-2 border border-slate-100 text-center">
+                            <div>
+                                <div class="text-[10px] text-slate-400 font-semibold">Buy Cost</div>
+                                <div class="text-xs font-bold text-indigo-700">${formatINR(itm.costPrice, true)}</div>
+                            </div>
+                            <div class="border-x border-slate-200">
+                                <div class="text-[10px] text-slate-400 font-semibold">Set Sell</div>
+                                <div class="text-xs font-extrabold text-emerald-700">${formatINR(itm.sellPrice, true)}</div>
+                            </div>
+                            <div>
+                                <div class="text-[10px] text-slate-400 font-semibold">Profit/${itm.unit}</div>
+                                <div class="text-xs font-extrabold text-amber-600">+${formatINR(unitProfit, true)}</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button onclick="instantOneTapTx('${itm.id}', 1)" class="${actionColor} font-extrabold py-2.5 px-2 rounded-xl text-xs shadow-xs transition flex items-center justify-center gap-1 cursor-pointer">
+                                <i class="fa-solid fa-bolt text-[10px]"></i> ${actionLabel} +1
+                            </button>
+                            <button onclick="instantOneTapTx('${itm.id}', 2)" class="bg-slate-100 hover:bg-emerald-50 hover:text-emerald-800 text-slate-800 font-extrabold py-2.5 px-2 rounded-xl text-xs border border-slate-200 transition cursor-pointer">
+                                ${actionLabel} +2
+                            </button>
+                            <button onclick="instantOneTapTx('${itm.id}', 5)" class="bg-slate-100 hover:bg-emerald-50 hover:text-emerald-800 text-slate-800 font-extrabold py-2.5 px-2 rounded-xl text-xs border border-slate-200 transition cursor-pointer">
+                                ${actionLabel} +5
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function instantOneTapTx(itemId, qty) {
+            const itm = items.find(i => i.id === itemId);
+            if (!itm) return;
+
+            if (posMode === 'SALE' && itm.stock < qty) {
+                showToast(`Only ${itm.stock} ${itm.unit} available in stock! Switching or add stock first.`, 'warning');
+                return;
+            }
+
+            const unitPrice = posMode === 'SALE' ? itm.sellPrice : itm.costPrice;
+            const totalAmount = Number((qty * unitPrice).toFixed(2));
+            const profit = posMode === 'SALE' ? Number((qty * (itm.sellPrice - itm.costPrice)).toFixed(2)) : 0;
+
+            if (posMode === 'SALE') {
+                itm.stock = Number((itm.stock - qty).toFixed(2));
+            } else {
+                itm.stock = Number((itm.stock + qty).toFixed(2));
+            }
+
+            transactions.unshift({
+                id: 'tx_' + Date.now() + '_' + Math.floor(Math.random() * 100),
+                date: getDateStrDaysAgo(0),
+                type: posMode,
+                itemId: itm.id,
+                itemName: itm.name,
+                category: itm.category,
+                unit: itm.unit,
+                qty: qty,
+                unitPrice: unitPrice,
+                costPrice: itm.costPrice,
+                totalAmount: totalAmount,
+                profit: profit,
+                note: posMode === 'SALE' ? '1-Tap Quick Counter Sale' : '1-Tap Quick Stock Restock'
+            });
+
+            saveDataToStorage();
+            refreshEntireApp();
+
+            if (posMode === 'SALE') {
+                showToast(`Sold ${qty} ${itm.unit} ${itm.name} • Profit +${formatINR(profit, true)}`);
+            } else {
+                showToast(`Added +${qty} ${itm.unit} stock for ${itm.name}`);
+            }
+        }
+
+        function updateFormCategoryPreview() {
+            const cat = document.getElementById('good-category')?.value || 'Snacks & Biscuits';
+            const picEl = document.getElementById('form-cat-pic');
+            const nameEl = document.getElementById('form-cat-name');
+            if (picEl) picEl.innerHTML = getCategorySvg(cat);
+            if (nameEl) nameEl.textContent = `${cat} (${CATEGORY_HINDI[cat] || ''})`;
+        }
+
+        function renderCategorySummaryCards() {
+            const container = document.getElementById('category-summary-cards');
+            if (!container) return;
+
+            const summary = {};
+            CATEGORIES.forEach(c => {
+                summary[c] = { count: 0, invest: 0, revenueVal: 0 };
+            });
+
+            items.forEach(itm => {
+                if (!summary[itm.category]) summary[itm.category] = { count: 0, invest: 0, revenueVal: 0 };
+                summary[itm.category].count++;
+                summary[itm.category].invest += itm.stock * itm.costPrice;
+                summary[itm.category].revenueVal += itm.stock * itm.sellPrice;
+            });
+
+            container.innerHTML = CATEGORIES.map(cat => {
+                const s = summary[cat];
+                const marginPct = s.revenueVal > 0 ? (((s.revenueVal - s.invest) / s.revenueVal) * 100).toFixed(0) : 0;
+                return `
+                    <button onclick="filterInventoryByCategory('${cat.replace(/'/g, "\\'")}')" class="p-3.5 rounded-2xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/40 text-left transition group bg-slate-50/70 flex items-center gap-3.5">
+                        <div class="w-12 h-12 rounded-xl overflow-hidden shrink-0 shadow-xs border border-white">
+                            ${getCategorySvg(cat)}
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-extrabold text-slate-800 group-hover:text-emerald-800 truncate">${cat}</span>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600">${s.count} items</span>
+                            </div>
+                            <div class="text-base font-extrabold text-slate-900 mt-0.5">${formatINR(s.invest)}</div>
+                            <div class="text-[11px] font-semibold text-emerald-700">Avg Margin: ~${marginPct}%</div>
+                        </div>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function filterInventoryByCategory(cat) {
+            const sel = document.getElementById('inv-cat-filter');
+            if (sel) {
+                sel.value = cat;
+                renderInventoryTable();
+            }
+        }
+
+        function calculateLiveMargin() {
+            const cost = parseFloat(document.getElementById('good-cost')?.value) || 0;
+            const sell = parseFloat(document.getElementById('good-price')?.value) || 0;
+            const profit = sell - cost;
+            const pct = sell > 0 ? ((profit / sell) * 100).toFixed(1) : '0.0';
+            const previewEl = document.getElementById('live-margin-preview');
+            if (previewEl) {
+                previewEl.textContent = `${formatINR(profit, true)} (${pct}%)`;
+                previewEl.className = profit >= 0 ? 'font-extrabold text-emerald-700' : 'font-extrabold text-rose-600';
+            }
+        }
+
+        function handleSaveGood(e) {
+            e.preventDefault();
+            const editId = document.getElementById('edit-good-id').value;
+            const name = document.getElementById('good-name').value.trim();
+            const category = document.getElementById('good-category').value;
+            const unit = document.getElementById('good-unit').value;
+            const costPrice = parseFloat(document.getElementById('good-cost').value) || 0;
+            const sellPrice = parseFloat(document.getElementById('good-price').value) || 0;
+            const stock = parseFloat(document.getElementById('good-stock').value) || 0;
+            const minStock = parseFloat(document.getElementById('good-min-stock').value) || 10;
+
+            if (!name) return;
+
+            if (editId) {
+                const idx = items.findIndex(i => i.id === editId);
+                if (idx > -1) {
+                    items[idx] = { ...items[idx], name, category, unit, costPrice, sellPrice, stock, minStock };
+                    showToast(`Updated "${name}" (Cost: ₹${costPrice}, Set Price: ₹${sellPrice})`);
+                }
+            } else {
+                const newItem = {
+                    id: 'itm_' + Date.now(),
+                    name,
+                    category,
+                    unit,
+                    costPrice,
+                    sellPrice,
+                    stock,
+                    minStock
+                };
+                items.unshift(newItem);
+
+                if (stock > 0) {
+                    transactions.unshift({
+                        id: 'tx_' + Date.now(),
+                        date: getDateStrDaysAgo(0),
+                        type: 'PURCHASE',
+                        itemId: newItem.id,
+                        itemName: newItem.name,
+                        category: newItem.category,
+                        unit: newItem.unit,
+                        qty: stock,
+                        unitPrice: costPrice,
+                        costPrice: costPrice,
+                        totalAmount: Number((stock * costPrice).toFixed(2)),
+                        profit: 0,
+                        note: 'Opening Stock Entry'
+                    });
+                }
+                showToast(`Added "${name}" to ${category}`);
+            }
+
+            resetGoodForm();
+            saveDataToStorage();
+            refreshEntireApp();
+        }
+
+        function editGood(id) {
+            const itm = items.find(i => i.id === id);
+            if (!itm) return;
+            switchTab('inventory');
+            document.getElementById('edit-good-id').value = itm.id;
+            document.getElementById('good-name').value = itm.name;
+            document.getElementById('good-category').value = itm.category;
+            document.getElementById('good-unit').value = itm.unit;
+            document.getElementById('good-cost').value = itm.costPrice;
+            document.getElementById('good-price').value = itm.sellPrice;
+            document.getElementById('good-stock').value = itm.stock;
+            document.getElementById('good-min-stock').value = itm.minStock || 10;
+
+            document.getElementById('good-form-title').textContent = 'Edit Good & Set Price';
+            document.getElementById('good-submit-btn').innerHTML = '<i class="fa-solid fa-check"></i> Update Good & Set Price';
+            document.getElementById('good-cancel-btn').classList.remove('hidden');
+            updateFormCategoryPreview();
+            calculateLiveMargin();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteGood(id) {
+            const idx = items.findIndex(i => i.id === id);
+            if (idx === -1) return;
+            const removed = items.splice(idx, 1)[0];
+            saveDataToStorage();
+            refreshEntireApp();
+            showToast(`Removed "${removed.name}" from inventory`, 'warning');
+        }
+
+        function resetGoodForm() {
+            const form = document.getElementById('good-form');
+            if (form) form.reset();
+            const editIdEl = document.getElementById('edit-good-id');
+            if (editIdEl) editIdEl.value = '';
+            const titleEl = document.getElementById('good-form-title');
+            if (titleEl) titleEl.textContent = 'Add New Good & Set Price';
+            const submitBtn = document.getElementById('good-submit-btn');
+            if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Good & Set Price';
+            const cancelBtn = document.getElementById('good-cancel-btn');
+            if (cancelBtn) cancelBtn.classList.add('hidden');
+            const previewEl = document.getElementById('live-margin-preview');
+            if (previewEl) previewEl.textContent = '₹0.00 (0%)';
+            updateFormCategoryPreview();
+        }
+
+        function renderInventoryTable() {
+            const tbody = document.getElementById('inventory-table-body');
+            if (!tbody) return;
+            const search = (document.getElementById('inv-search')?.value || '').toLowerCase();
+            const catFilter = document.getElementById('inv-cat-filter')?.value || 'ALL';
+
+            const filtered = items.filter(itm => {
+                const matchSearch = itm.name.toLowerCase().includes(search) || itm.category.toLowerCase().includes(search);
+                const matchCat = catFilter === 'ALL' || itm.category === catFilter;
+                return matchSearch && matchCat;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400">No goods match your search filter.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(itm => {
+                const unitProfit = itm.sellPrice - itm.costPrice;
+                const marginPct = itm.sellPrice > 0 ? ((unitProfit / itm.sellPrice) * 100).toFixed(1) : '0.0';
+                const totalInvest = itm.stock * itm.costPrice;
+                const isLow = itm.stock <= (itm.minStock || 10);
+
+                return `
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="py-3 px-3">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-9 h-9 rounded-xl overflow-hidden shrink-0 border border-slate-200">
+                                    ${getCategorySvg(itm.category)}
+                                </div>
+                                <div>
+                                    <div class="font-bold text-slate-800">${itm.name}</div>
+                                    <span class="inline-block mt-0.5 px-2 py-0.5 text-[10px] font-bold rounded-full bg-slate-100 text-slate-600">${itm.category}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-3 px-3 text-right font-semibold text-indigo-700">${formatINR(itm.costPrice, true)} <span class="text-[10px] text-slate-400">/${itm.unit}</span></td>
+                        <td class="py-3 px-3 text-right font-extrabold text-emerald-700">${formatINR(itm.sellPrice, true)} <span class="text-[10px] text-slate-400">/${itm.unit}</span></td>
+                        <td class="py-3 px-3 text-right">
+                            <span class="font-bold text-amber-700">+${formatINR(unitProfit, true)}</span>
+                            <span class="block text-[10px] font-semibold text-emerald-600">${marginPct}% margin</span>
+                        </td>
+                        <td class="py-3 px-3 text-right">
+                            <span class="font-extrabold ${isLow ? 'text-rose-600' : 'text-slate-800'}">${itm.stock} ${itm.unit}</span>
+                            ${isLow ? `<span class="block text-[10px] font-bold text-rose-600">Low Stock!</span>` : ''}
+                        </td>
+                        <td class="py-3 px-3 text-right font-bold text-slate-800">${formatINR(totalInvest)}</td>
+                        <td class="py-3 px-3 text-center">
+                            <div class="inline-flex items-center gap-1">
+                                <button onclick="openQuickModalForItem('${itm.id}', 'SALE')" title="Quick Sell" class="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-bold">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                </button>
+                                <button onclick="openQuickModalForItem('${itm.id}', 'PURCHASE')" title="Restock Purchase" class="p-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-bold">
+                                    <i class="fa-solid fa-truck"></i>
+                                </button>
+                                <button onclick="editGood('${itm.id}')" title="Edit Rate / Stock" class="p-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <button onclick="deleteGood('${itm.id}')" title="Delete Good" class="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // =========================================================================
+        // 7. PURCHASE & SALE LOGGING SYSTEM
+        // =========================================================================
+        function populateTransactionItemDropdowns() {
+            const optionsHtml = items.map(itm =>
+                `<option value="${itm.id}">${itm.name} (${itm.stock} ${itm.unit} avail)</option>`
+            ).join('');
+
+            const txSelect = document.getElementById('tx-item-select');
+            const qmSelect = document.getElementById('qm-item');
+            if (txSelect) txSelect.innerHTML = optionsHtml;
+            if (qmSelect) qmSelect.innerHTML = optionsHtml;
+
+            onTxItemChange();
+            onQmItemChange();
+        }
+
+        function setTxType(type) {
+            const typeInput = document.getElementById('tx-type');
+            if (typeInput) typeInput.value = type;
+            const btnSale = document.getElementById('tx-type-sale');
+            const btnPurch = document.getElementById('tx-type-purchase');
+
+            if (btnSale && btnPurch) {
+                if (type === 'SALE') {
+                    btnSale.className = 'py-2 rounded-lg text-xs font-extrabold bg-emerald-600 text-white shadow-xs transition';
+                    btnPurch.className = 'py-2 rounded-lg text-xs font-extrabold text-slate-600 hover:text-slate-900 transition';
+                } else {
+                    btnPurch.className = 'py-2 rounded-lg text-xs font-extrabold bg-indigo-600 text-white shadow-xs transition';
+                    btnSale.className = 'py-2 rounded-lg text-xs font-extrabold text-slate-600 hover:text-slate-900 transition';
+                }
+            }
+            onTxItemChange();
+        }
+
+        function onTxItemChange() {
+            const itemId = document.getElementById('tx-item-select')?.value;
+            const type = document.getElementById('tx-type')?.value || 'SALE';
+            const itm = items.find(i => i.id === itemId);
+            const priceEl = document.getElementById('tx-unit-price');
+            if (!itm || !priceEl) return;
+
+            priceEl.value = type === 'SALE' ? itm.sellPrice : itm.costPrice;
+            updateTxPreview();
+        }
+
+        function updateTxPreview() {
+            const qty = parseFloat(document.getElementById('tx-qty')?.value) || 0;
+            const price = parseFloat(document.getElementById('tx-unit-price')?.value) || 0;
+            const previewEl = document.getElementById('tx-total-preview');
+            if (previewEl) previewEl.textContent = formatINR(qty * price, true);
+        }
+
+        function handleRecordTransaction(e) {
+            e.preventDefault();
+            const type = document.getElementById('tx-type').value;
+            const itemId = document.getElementById('tx-item-select').value;
+            const date = document.getElementById('tx-date').value || getDateStrDaysAgo(0);
+            const qty = parseFloat(document.getElementById('tx-qty').value) || 0;
+            const unitPrice = parseFloat(document.getElementById('tx-unit-price').value) || 0;
+            const note = document.getElementById('tx-note').value.trim();
+
+            executeTransaction(type, itemId, qty, unitPrice, date, note);
+            document.getElementById('tx-qty').value = '';
+            document.getElementById('tx-note').value = '';
+            updateTxPreview();
+        }
+
+        function executeTransaction(type, itemId, qty, unitPrice, date, note = '') {
+            const itm = items.find(i => i.id === itemId);
+            if (!itm || qty <= 0) return;
+
+            if (type === 'SALE' && itm.stock < qty) {
+                showToast(`Only ${itm.stock} ${itm.unit} available in stock for "${itm.name}"!`, 'warning');
+                return;
+            }
+
+            const totalAmount = Number((qty * unitPrice).toFixed(2));
+            let profit = 0;
+
+            if (type === 'SALE') {
+                profit = Number((qty * (unitPrice - itm.costPrice)).toFixed(2));
+                itm.stock = Number((itm.stock - qty).toFixed(2));
+            } else {
+                itm.costPrice = unitPrice;
+                itm.stock = Number((itm.stock + qty).toFixed(2));
+            }
+
+            transactions.unshift({
+                id: 'tx_' + Date.now(),
+                date,
+                type,
+                itemId: itm.id,
+                itemName: itm.name,
+                category: itm.category,
+                unit: itm.unit,
+                qty,
+                unitPrice,
+                costPrice: itm.costPrice,
+                totalAmount,
+                profit,
+                note: note || (type === 'SALE' ? 'Counter Customer Sale' : 'Stock Purchase Entry')
+            });
+
+            transactions.sort((a, b) => b.date.localeCompare(a.date));
+            saveDataToStorage();
+            refreshEntireApp();
+            showToast(`${type === 'SALE' ? 'Sale' : 'Stock Purchase'} recorded: ${qty} ${itm.unit} ${itm.name} (${formatINR(totalAmount)})`);
+        }
+
+        function deleteTransaction(txId) {
+            const idx = transactions.findIndex(t => t.id === txId);
+            if (idx === -1) return;
+            const tx = transactions[idx];
+            const itm = items.find(i => i.id === tx.itemId);
+            if (itm) {
+                if (tx.type === 'SALE') itm.stock = Number((itm.stock + tx.qty).toFixed(2));
+                else itm.stock = Math.max(0, Number((itm.stock - tx.qty).toFixed(2)));
+            }
+            transactions.splice(idx, 1);
+            saveDataToStorage();
+            refreshEntireApp();
+            showToast('Transaction entry deleted & stock restored', 'warning');
+        }
+
+        function renderTransactionLog() {
+            const tbody = document.getElementById('tx-log-body');
+            if (!tbody) return;
+            const typeFilter = document.getElementById('log-type-filter')?.value || 'ALL';
+            const catFilter = document.getElementById('log-cat-filter')?.value || 'ALL';
+
+            const filtered = transactions.filter(tx => {
+                const matchType = typeFilter === 'ALL' || tx.type === typeFilter;
+                const matchCat = catFilter === 'ALL' || tx.category === catFilter;
+                return matchType && matchCat;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400">No transactions found for the selected filter.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.slice(0, 80).map(tx => {
+                const isSale = tx.type === 'SALE';
+                return `
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="py-2.5 px-3 text-slate-600 font-medium whitespace-nowrap">${tx.date}</td>
+                        <td class="py-2.5 px-3">
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${isSale ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800'}">
+                                ${isSale ? 'SALE (बिक्री)' : 'PURCHASE (खरीद)'}
+                            </span>
+                        </td>
+                        <td class="py-2.5 px-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-lg overflow-hidden shrink-0 border border-slate-200">
+                                    ${getCategorySvg(tx.category)}
+                                </div>
+                                <div>
+                                    <div class="font-bold text-slate-800">${tx.itemName}</div>
+                                    <div class="text-[10px] text-slate-400">${tx.category} • ${tx.note || ''}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-2.5 px-3 text-right font-bold text-slate-700">${tx.qty} ${tx.unit}</td>
+                        <td class="py-2.5 px-3 text-right text-slate-600">${formatINR(tx.unitPrice, true)}</td>
+                        <td class="py-2.5 px-3 text-right font-extrabold ${isSale ? 'text-emerald-700' : 'text-indigo-700'}">${formatINR(tx.totalAmount)}</td>
+                        <td class="py-2.5 px-3 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <span class="font-bold ${isSale ? 'text-amber-700' : 'text-slate-400'}">${isSale ? '+' + formatINR(tx.profit, true) : '—'}</span>
+                                <button onclick="deleteTransaction('${tx.id}')" title="Undo / Delete Entry" class="text-slate-300 hover:text-rose-600 transition">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // =========================================================================
+        // 8. PROGRESS REPORT GENERATOR
+        // =========================================================================
+        function sumMetricsForDateRange(startStr, endStr) {
+            let sales = 0;
+            let purchases = 0;
+            let profit = 0;
+            transactions.forEach(tx => {
+                if (tx.date >= startStr && tx.date <= endStr) {
+                    if (tx.type === 'SALE') {
+                        sales += tx.totalAmount;
+                        profit += tx.profit;
+                    } else if (tx.type === 'PURCHASE') {
+                        purchases += tx.totalAmount;
+                    }
+                }
+            });
+            return { sales, purchases, profit };
+        }
+
+        function formatGrowthBadge(curr, prev) {
+            if (prev <= 0) return { text: '+100%', positive: true };
+            const diffPct = (((curr - prev) / prev) * 100).toFixed(1);
+            return {
+                text: (diffPct >= 0 ? '+' : '') + diffPct + '%',
+                positive: diffPct >= 0
+            };
+        }
+
+        function renderProgressReport() {
+            const genDateEl = document.getElementById('report-generated-date');
+            if (genDateEl) {
+                genDateEl.textContent = 'Report Generated on: ' + new Date().toLocaleDateString('en-IN', {
+                    weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+                });
+            }
+
+            const todayStr = getDateStrDaysAgo(0);
+            const yesterdayStr = getDateStrDaysAgo(1);
+            const todayM = sumMetricsForDateRange(todayStr, todayStr);
+            const yestM = sumMetricsForDateRange(yesterdayStr, yesterdayStr);
+
+            const wkCurrM = sumMetricsForDateRange(getDateStrDaysAgo(6), todayStr);
+            const wkPrevM = sumMetricsForDateRange(getDateStrDaysAgo(13), getDateStrDaysAgo(7));
+
+            const moCurrM = sumMetricsForDateRange(getDateStrDaysAgo(29), todayStr);
+            const moPrevM = sumMetricsForDateRange(getDateStrDaysAgo(59), getDateStrDaysAgo(30));
+
+            let currentStockCost = 0;
+            items.forEach(i => currentStockCost += i.stock * i.costPrice);
+            const monthlyRoi = currentStockCost > 0 ? ((moCurrM.profit / currentStockCost) * 100).toFixed(1) : '0.0';
+            const roiBadge = document.getElementById('rep-roi-badge');
+            if (roiBadge) roiBadge.textContent = `30-Day Return on Inventory: ${monthlyRoi}%`;
+
+            const cardsContainer = document.getElementById('progress-comparison-cards');
+            if (cardsContainer) {
+                const periods = [
+                    { title: 'Today vs Yesterday', sub: 'Daily Progress Pulse', curr: todayM, prev: yestM },
+                    { title: 'This Week vs Last Week', sub: '7-Day Growth Comparison', curr: wkCurrM, prev: wkPrevM },
+                    { title: 'Last 30 Days vs Prev 30 Days', sub: 'Monthly Business Trajectory', curr: moCurrM, prev: moPrevM }
+                ];
+
+                cardsContainer.innerHTML = periods.map(p => {
+                    const saleGrowth = formatGrowthBadge(p.curr.sales, p.prev.sales);
+                    const profitGrowth = formatGrowthBadge(p.curr.profit, p.prev.profit);
+                    return `
+                        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-sm font-extrabold text-slate-800">${p.title}</h3>
+                                    <p class="text-[11px] text-slate-400">${p.sub}</p>
+                                </div>
+                                <span class="px-2.5 py-1 rounded-full text-xs font-extrabold ${profitGrowth.positive ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-700'}">
+                                    ${profitGrowth.text} Profit
+                                </span>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-center">
+                                <div class="p-2 rounded-xl bg-emerald-50/70">
+                                    <span class="text-[10px] font-bold text-slate-500 uppercase block">Sales</span>
+                                    <span class="text-sm font-extrabold text-emerald-700">${formatINR(p.curr.sales)}</span>
+                                    <span class="block text-[10px] text-slate-400">${saleGrowth.text}</span>
+                                </div>
+                                <div class="p-2 rounded-xl bg-indigo-50/70">
+                                    <span class="text-[10px] font-bold text-slate-500 uppercase block">Purchases</span>
+                                    <span class="text-sm font-extrabold text-indigo-700">${formatINR(p.curr.purchases)}</span>
+                                    <span class="block text-[10px] text-slate-400">Stock In</span>
+                                </div>
+                                <div class="p-2 rounded-xl bg-amber-50/90">
+                                    <span class="text-[10px] font-bold text-slate-500 uppercase block">Net Profit</span>
+                                    <span class="text-sm font-extrabold text-amber-700">${formatINR(p.curr.profit)}</span>
+                                    <span class="block text-[10px] text-slate-400">Prev: ${formatINR(p.prev.profit)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const itemPerf = {};
+            items.forEach(i => {
+                itemPerf[i.id] = { item: i, unitsSold: 0, revenue: 0, profit: 0 };
+            });
+            transactions.forEach(tx => {
+                if (tx.type === 'SALE' && itemPerf[tx.itemId]) {
+                    itemPerf[tx.itemId].unitsSold += tx.qty;
+                    itemPerf[tx.itemId].revenue += tx.totalAmount;
+                    itemPerf[tx.itemId].profit += tx.profit;
+                }
+            });
+
+            const sortedByProfit = Object.values(itemPerf).sort((a, b) => b.profit - a.profit);
+            const topContainer = document.getElementById('report-top-items');
+            if (topContainer) {
+                topContainer.innerHTML = sortedByProfit.slice(0, 6).map((entry, idx) => `
+                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                        <div class="flex items-center gap-3">
+                            <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-800 font-extrabold text-xs flex items-center justify-center">#${idx + 1}</span>
+                            <div>
+                                <div class="text-xs font-bold text-slate-800">${entry.item.name}</div>
+                                <div class="text-[10px] text-slate-400">${entry.unitsSold} ${entry.item.unit} sold • Sales: ${formatINR(entry.revenue)}</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs font-extrabold text-emerald-700">+${formatINR(entry.profit)}</div>
+                            <div class="text-[10px] text-slate-400">Net Profit</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const lowStockItems = items.filter(i => i.stock <= (i.minStock || 10));
+            const slowMovers = sortedByProfit.slice(-2);
+
+            const alertsContainer = document.getElementById('report-alerts-list');
+            if (alertsContainer) {
+                let alertsHtml = '';
+                lowStockItems.forEach(itm => {
+                    alertsHtml += `
+                        <div class="flex items-center justify-between p-2.5 rounded-xl bg-rose-50/70 border border-rose-200">
+                            <div>
+                                <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-rose-200 text-rose-900">Restock Needed</span>
+                                <div class="text-xs font-bold text-slate-800 mt-1">${itm.name}</div>
+                                <div class="text-[10px] text-rose-700">Current Stock: ${itm.stock} ${itm.unit} (Min Alert: ${itm.minStock} ${itm.unit})</div>
+                            </div>
+                            <button onclick="openQuickModalForItem('${itm.id}', 'PURCHASE')" class="px-2.5 py-1.5 rounded-lg bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 transition no-print">
+                                + Buy Stock
+                            </button>
+                        </div>
+                    `;
+                });
+
+                slowMovers.forEach(entry => {
+                    alertsHtml += `
+                        <div class="flex items-center justify-between p-2.5 rounded-xl bg-amber-50/70 border border-amber-200">
+                            <div>
+                                <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-amber-200 text-amber-900">Capital Tied Up</span>
+                                <div class="text-xs font-bold text-slate-800 mt-1">${entry.item.name}</div>
+                                <div class="text-[10px] text-amber-800">Stock Value: ${formatINR(entry.item.stock * entry.item.costPrice)} (${entry.item.stock} ${entry.item.unit} in shop)</div>
+                            </div>
+                            <span class="text-xs font-bold text-amber-800">${formatINR(entry.profit)} profit</span>
+                        </div>
+                    `;
+                });
+
+                alertsContainer.innerHTML = alertsHtml || `<p class="text-xs text-slate-500">All goods are well-stocked!</p>`;
+            }
+        }
+
+        // =========================================================================
+        // 9. QUICK MODAL, GRANULAR RESET MODAL & CSV EXPORT UTILITIES
+        // =========================================================================
+        function openResetCenterModal() {
+            const modal = document.getElementById('reset-center-modal');
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeResetCenterModal() {
+            const modal = document.getElementById('reset-center-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function askResetConfirmation(scope) {
+            pendingResetScope = scope;
+            closeResetCenterModal();
+
+            const descEl = document.getElementById('confirm-reset-desc');
+            if (descEl) {
+                if (scope === 'SALES_ONLY') {
+                    descEl.innerHTML = 'You are about to delete <strong>ONLY Customer Sales Logs</strong>. Your Goods list, Set Prices, and Purchase history will stay untouched.';
+                } else if (scope === 'LOGS') {
+                    descEl.innerHTML = 'You are about to clear <strong>ALL Sales & Purchase Logs</strong>. Your Goods list & Set Prices will stay saved.';
+                } else if (scope === 'ITEMS') {
+                    descEl.innerHTML = 'You are about to reset <strong>ALL Goods & Set Prices</strong> from the Add Item section so you can enter your own goods from scratch.';
+                } else if (scope === 'ALL_EMPTY') {
+                    descEl.innerHTML = 'You are about to perform a <strong>Complete Shop Reset (Zero Goods & Zero Logs)</strong>.';
+                } else if (scope === 'DEMO') {
+                    descEl.innerHTML = 'You are about to restore the <strong>Sample Kirana Demo Goods & 90-Day Logs</strong>.';
+                }
+            }
+
+            const confirmModal = document.getElementById('confirm-reset-modal');
+            if (confirmModal) {
+                confirmModal.classList.remove('hidden');
+                confirmModal.classList.add('flex');
+            }
+        }
+
+        function closeConfirmResetModal() {
+            pendingResetScope = null;
+            const confirmModal = document.getElementById('confirm-reset-modal');
+            if (confirmModal) {
+                confirmModal.classList.add('hidden');
+                confirmModal.classList.remove('flex');
+            }
+        }
+
+        function executeConfirmedReset() {
+            if (!pendingResetScope) return;
+            const scope = pendingResetScope;
+            closeConfirmResetModal();
+
+            if (scope === 'SALES_ONLY') {
+                transactions = transactions.filter(tx => tx.type !== 'SALE');
+                saveDataToStorage();
+                refreshEntireApp();
+                showToast('All Customer Sales Logs have been reset!', 'warning');
+            } else if (scope === 'LOGS') {
+                transactions = [];
+                saveDataToStorage();
+                refreshEntireApp();
+                showToast('All Sales & Purchase Logs have been reset!', 'warning');
+            } else if (scope === 'ITEMS') {
+                items = [];
+                saveDataToStorage();
+                refreshEntireApp();
+                showToast('All Goods & Set Prices have been reset!', 'warning');
+            } else if (scope === 'ALL_EMPTY') {
+                items = [];
+                transactions = [];
+                saveDataToStorage();
+                refreshEntireApp();
+                showToast('Shop reset to 0 Goods and 0 Logs!', 'warning');
+            } else if (scope === 'DEMO') {
+                generateInitialDemoData();
+                refreshEntireApp();
+                showToast('Sample Snacks, Biscuits & Tea Data restored!');
+            }
+        }
+
+        function openQuickModal(type) {
+            document.getElementById('qm-type').value = type;
+            document.getElementById('qm-date').value = getDateStrDaysAgo(0);
+            document.getElementById('qm-qty').value = 1;
+
+            const iconEl = document.getElementById('qm-icon');
+            const titleEl = document.getElementById('qm-title');
+            const subBtn = document.getElementById('qm-submit-btn');
+
+            if (type === 'SALE') {
+                iconEl.className = 'w-9 h-9 rounded-xl flex items-center justify-center font-bold text-white bg-emerald-600';
+                iconEl.innerHTML = '<i class="fa-solid fa-cart-shopping"></i>';
+                titleEl.textContent = 'Quick Customer Sale Entry';
+                subBtn.className = 'w-full font-bold py-2.5 rounded-xl text-xs text-white shadow-md transition bg-emerald-600 hover:bg-emerald-700';
+            } else {
+                iconEl.className = 'w-9 h-9 rounded-xl flex items-center justify-center font-bold text-white bg-indigo-600';
+                iconEl.innerHTML = '<i class="fa-solid fa-truck-ramp-box"></i>';
+                titleEl.textContent = 'Quick Stock Purchase Entry';
+                subBtn.className = 'w-full font-bold py-2.5 rounded-xl text-xs text-white shadow-md transition bg-indigo-600 hover:bg-indigo-700';
+            }
+
+            onQmItemChange();
+            const modal = document.getElementById('quick-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function openQuickModalForItem(itemId, type) {
+            openQuickModal(type);
+            document.getElementById('qm-item').value = itemId;
+            onQmItemChange();
+        }
+
+        function closeQuickModal() {
+            const modal = document.getElementById('quick-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function onQmItemChange() {
+            const itemId = document.getElementById('qm-item')?.value;
+            const type = document.getElementById('qm-type')?.value || 'SALE';
+            const itm = items.find(i => i.id === itemId);
+            const priceEl = document.getElementById('qm-price');
+            if (!itm || !priceEl) return;
+            priceEl.value = type === 'SALE' ? itm.sellPrice : itm.costPrice;
+        }
+
+        function handleQuickModalSubmit(e) {
+            e.preventDefault();
+            const type = document.getElementById('qm-type').value;
+            const itemId = document.getElementById('qm-item').value;
+            const qty = parseFloat(document.getElementById('qm-qty').value) || 0;
+            const price = parseFloat(document.getElementById('qm-price').value) || 0;
+            const date = document.getElementById('qm-date').value || getDateStrDaysAgo(0);
+
+            executeTransaction(type, itemId, qty, price, date, 'Quick Action Entry');
+            closeQuickModal();
+        }
+
+        function exportReportCSV() {
+            const rows = [
+                ['Date', 'Type', 'Good Name', 'Category', 'Quantity', 'Unit', 'Unit Rate (INR)', 'Total Amount (INR)', 'Net Profit (INR)', 'Notes']
+            ];
+            transactions.forEach(tx => {
+                rows.push([
+                    tx.date,
+                    tx.type,
+                    `"${tx.itemName.replace(/"/g, '""')}"`,
+                    `"${tx.category}"`,
+                    tx.qty,
+                    tx.unit,
+                    tx.unitPrice,
+                    tx.totalAmount,
+                    tx.profit,
+                    `"${(tx.note || '').replace(/"/g, '""')}"`
+                ]);
+            });
+
+            const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(r => r.join(',')).join('\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', `Kirana_Mitra_Report_${getDateStrDaysAgo(0)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('Exported Kirana Mitra CSV report!');
+        }
+
+        function showToast(message, variant = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            const bgClass = variant === 'warning'
+                ? 'bg-rose-700 text-white border-rose-500'
+                : 'bg-emerald-900 text-white border-emerald-600';
+
+            toast.className = `${bgClass} border px-4 py-3 rounded-xl shadow-lg text-xs font-bold flex items-center gap-2.5 pointer-events-auto transition-all duration-300`;
+            toast.innerHTML = `
+                <i class="fa-solid ${variant === 'warning' ? 'fa-triangle-exclamation text-amber-300' : 'fa-circle-check text-emerald-400'} text-sm"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+
+        function refreshEntireApp() {
+            updateTopKPIs();
+            populateChartCategoryFilter();
+            renderQuickPosCounter();
+            updateFormCategoryPreview();
+            renderCategorySummaryCards();
+            renderInventoryTable();
+            populateTransactionItemDropdowns();
+            renderTransactionLog();
+            updateAllCharts();
+            renderProgressReport();
+        }
+
+        window.onload = async function () {
+            const txDateEl = document.getElementById('tx-date');
+            if (txDateEl) {
+                txDateEl.value = getDateStrDaysAgo(0);
+            }
+            const qmDateEl = document.getElementById('qm-date');
+            if (qmDateEl) {
+                qmDateEl.value = getDateStrDaysAgo(0);
+            }
+            await requestPermanentPhoneStorage();
+            await loadDataFromStorage();
+            refreshEntireApp();
+        };
+    </script>
+</body>
+</html>
